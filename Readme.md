@@ -1,18 +1,24 @@
-# CVD Risk Prediction Web App
+# 🫀 CVD Risk Prediction Web App
 
-A Flask-based web application to predict cardiovascular disease risk using a trained machine learning model.
+This is a Flask web app that predicts the risk of Cardiovascular Disease (CVD) using a trained machine learning model.
 
-## 🚀 Features
+## 🔗 Live Demo
 
-- Flask backend
+[Check it out on Render](https://cvd-risk-app.onrender.com)
+
+## 📦 Features
+
 - Logistic Regression ML model
+- Flask web interface
 - Dockerized for easy deployment
-- User-friendly HTML interface
+- Render auto-deployment via `render.yaml`
 
-## 🐳 Docker
+## 🚀 Quick Start
 
-Build and run the app using Docker:
+Clone the repo and run locally:
 
 ```bash
-docker build -t cvd-risk-app .
-docker run -p 5000:5000 cvd-risk-app
+git clone https://github.com/crabstertechnology/cvd-risk-app.git
+cd cvd-risk-app
+pip install -r requirements.txt
+python app.py
