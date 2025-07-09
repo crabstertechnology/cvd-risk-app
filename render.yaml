@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: cvd-risk-app
+    env: docker
+    repo: https://github.com/crabstertechnology/cvd-risk-app
+    branch: main
+    dockerfilePath: ./Dockerfile
+    plan: free
+    autoDeploy: true
