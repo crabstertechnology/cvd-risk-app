@@ -67,6 +67,17 @@
             z-index: 1;
         }
 
+        .datetime-display {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -545,12 +556,20 @@
         <div class="header">
             <h1>❤️ CVD Risk Prediction Dashboard</h1>
             <p>Advanced cardiovascular risk assessment tool</p>
+            <div class="datetime-display">
+                <div id="currentDateTime">Loading...</div>
+            </div>
         </div>
 
         <div class="main-content">
             <div class="form-section">
                 <h2>📋 Patient Information</h2>
                 <form id="cvdForm">
+                    <div class="form-group">
+                        <label for="patientName">👤 Patient Name:</label>
+                        <input type="text" id="patientName" name="patientName" required placeholder="Enter patient's full name">
+                    </div>
+
                     <div class="form-group">
                         <label for="ap_hi">🩺 Systolic Blood Pressure (mmHg):</label>
                         <input type="number" id="ap_hi" name="ap_hi" required placeholder="120">
@@ -630,7 +649,9 @@
                     <!-- Print-only information -->
                     <div class="print-info" id="printInfo">
                         <h4>📋 Test Information</h4>
+                        <p><strong>Patient Name:</strong> <span id="printPatientName"></span></p>
                         <p><strong>Test Date:</strong> <span id="testDate"></span></p>
+                        <p><strong>Test Time:</strong> <span id="testTime"></span></p>
                         <p><strong>Patient Age:</strong> <span id="printAge"></span> years</p>
                         <p><strong>Blood Pressure:</strong> <span id="printBP"></span> mmHg</p>
                         <p><strong>Cholesterol Level:</strong> <span id="printCholesterol"></span></p>
@@ -654,6 +675,29 @@
     <script>
         // Store current test data for print
         let currentTestData = {};
+        let testDateTime = null;
+
+        // Update date and time display
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            const formatted = now.toLocaleDateString('en-US', options);
+            document.getElementById('currentDateTime').textContent = formatted;
+        }
+
+        // Update date/time every second
+        setInterval(updateDateTime, 1000);
+
+        // Initialize date/time on page load
+        updateDateTime();
 
         // Simulate the prediction function
         function predictCVDRisk(data) {
@@ -767,7 +811,9 @@
                 3: 'Well Above Normal'
             };
 
-            document.getElementById('testDate').textContent = new Date().toLocaleDateString();
+            document.getElementById('printPatientName').textContent = currentTestData.patientName || 'N/A';
+            document.getElementById('testDate').textContent = testDateTime ? testDateTime.toLocaleDateString() : new Date().toLocaleDateString();
+            document.getElementById('testTime').textContent = testDateTime ? testDateTime.toLocaleTimeString() : new Date().toLocaleTimeString();
             document.getElementById('printAge').textContent = currentTestData.age;
             document.getElementById('printBP').textContent = `${currentTestData.ap_hi}/${currentTestData.ap_lo}`;
             document.getElementById('printCholesterol').textContent = cholesterolText[currentTestData.cholesterol];
@@ -796,6 +842,7 @@
             
             // Clear current test data
             currentTestData = {};
+            testDateTime = null;
         }
 
         // Form submission handler
@@ -809,6 +856,7 @@
             // Get form data
             const formData = new FormData(this);
             const data = {
+                patientName: formData.get('patientName'),
                 ap_hi: parseInt(formData.get('ap_hi')),
                 ap_lo: parseInt(formData.get('ap_lo')),
                 age: parseInt(formData.get('age')),
@@ -816,8 +864,9 @@
                 weight: parseFloat(formData.get('weight'))
             };
             
-            // Store test data for print
+            // Store test data and timestamp for print
             currentTestData = data;
+            testDateTime = new Date();
             
             // Simulate processing time
             setTimeout(() => {
